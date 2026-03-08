@@ -817,11 +817,100 @@ When making changes to `23_om-dispatch/` in the Claude_Code monorepo, also push 
 - ビルド: 252 modules、成功
 
 #### 次セッションでやること
-1. **ワークツリーのマージ**: `magical-curie` ワークツリーの変更をメインブランチにマージ
+1. ~~**ワークツリーのマージ**: `magical-curie` ワークツリーの変更をメインブランチにマージ~~
 2. **OM_dispatch専用リポへの同期**: Claude_Code monorepo → OM_dispatch リポにpush
 3. **GitHub Pagesデプロイ**: 変更をデプロイして本番環境で動作確認
-4. **差配実行テスト**: サンプル案件で実際にディスパッチを実行し、チーム編成結果を確認
-5. **カレンダー連携統合**: `calendarEvents`が`[]`で渡される問題の修正（Known Issues #9）
+4. ~~**差配実行テスト**: サンプル案件で実際にディスパッチを実行し、チーム編成結果を確認~~
+5. ~~**カレンダー連携統合**: `calendarEvents`が`[]`で渡される問題の修正（Known Issues #9）~~
+
+### Session 15: カレンダー連携ディスパッチ + マルチデイ修正
+
+**ワークツリー**: `kind-wescoff` (branch: `claude/kind-wescoff`)
+
+#### 完了した変更
+
+**1. カレンダー連携ディスパッチ (commit: 1072495)**
+- `filterAvailableMembers()` を `findAvailableSlots()` (calendarService.js) ベースに書き換え
+- `scoreTeam()` に `calendarFit` スコア (15%重み) 追加
+- `rankTeams()` に `_meta` (excludedMembers情報) 追加
+- NaNバグ修正: `s.end - s.start` → `s.durationMinutes || 0`
+- UI: 除外メンバー情報ボックス (amber) + カレンダースコア列追加
+- AI差配プロンプトにカレンダー情報追加
+
+変更ファイル (6件):
+- `src/services/dispatchEngine.js` — エンジン全般
+- `src/hooks/useDispatchEngine.js` — excludedMembers state
+- `src/services/claudeService.js` — AIプロンプト更新
+- `src/hooks/useClaudeApi.js` — calendarEvents引数追加
+- `src/components/dispatch/DispatchView.jsx` — 除外メンバーUI
+- `src/components/dispatch/RecommendationPanel.jsx` — カレンダースコア列
+
+**2. マルチデイ差配 "0名稼働" バグ修正 (commit: 4d1da86)**
+- `evaluateDayAssignment()` が生パターンデータ `{jobId, date, jobIndex}` をそのまま渡していた
+- 修正: `jobsWithTypes` を引数追加、日ごとに `rankMultiJobPlans()` を実行してチーム編成を算出
+- スコアリングも実際のチームスコア平均 + 日付近接ボーナスに改善
+
+変更ファイル: `src/services/dispatchEngine.js` のみ
+
+#### 動作テスト結果
+
+| テスト | 結果 |
+|---|---|
+| 単一案件差配 (パワまる現調A) | ✅ 5チーム推奨、4名カレンダー除外、カレンダースコア表示 |
+| 複数案件マルチデイ差配 (現調A+工事A) | ✅ 2日間スケジュール、チーム名・人工・車両正常表示 |
+| コンソールエラー | ✅ なし |
+
+#### 未修正の問題 (次セッションで対応)
+
+**マルチデイ差配でカレンダー競合を無視している問題**:
+- `evaluateDayAssignment()` 内の `rankMultiJobPlans()` 呼び出しで、各ジョブの `preferredDate` が割当日ではなく元の希望日のまま
+- `filterAvailableMembers()` は `job.preferredDate` でカレンダーをチェックするため、実際の割当日の予定が考慮されない
+- **修正方針**: `evaluateDayAssignment()` 内で、日ごとのジョブの `preferredDate` を割当日で上書きしてから `rankMultiJobPlans()` を呼ぶ
+- 修正箇所: `dispatchEngine.js` の `evaluateDayAssignment()` (line ~428)
+```javascript
+// 現在:
+const dayJobsWithTypes = items.map(item => jobsWithTypes[item.jobIndex]);
+// 修正後:
+const dayJobsWithTypes = items.map(item => ({
+  ...jobsWithTypes[item.jobIndex],
+  job: { ...jobsWithTypes[item.jobIndex].job, preferredDate: date },
+}));
+```
+
+### Session 16: マルチデイ差配バグ修正 (カレンダー競合 + チーム編成)
+
+**ワークツリー**: `charming-yalow` (branch: `claude/charming-yalow`)
+
+#### 修正内容
+
+**Bug #1: `filterAvailableMembers()` フィールド名不一致 (dispatchEngine.js L199-207)**
+- `event.memberId === member.id && event.date === jobDate` → フィールドが存在しないため常にtrue
+- 修正: `event.memberEmail` vs `member.outlookEmail` + `event.start?.substring(0,10)` vs `jobDate` + `event.isBusy` チェック
+
+**Bug #2: `evaluateDayAssignment()` がチーム編成せず (dispatchEngine.js L387-441)**
+- 生パターンデータ `{jobId, date, jobIndex}` をそのまま返していた
+- 修正: 日ごとに `rankMultiJobPlans()` を呼んで実際のチーム編成を算出
+- `preferredDate` を割当日で上書きしてカレンダー競合を正しくチェック
+
+**Bug #3: `rankMultiDayPlans()` パラメータ不足 (dispatchEngine.js L334)**
+- `evaluateDayAssignment(pattern, members, settings, calendarEvents)` → `jobsWithTypes` が欠落
+- 修正: `evaluateDayAssignment(pattern, members, jobsWithTypes, settings, calendarEvents)`
+
+**Bug #4: `useDispatchEngine` カレンダー未連携 (useDispatchEngine.js)**
+- `rankTeams()` と `rankMultiDayPlans()` に `[]` をハードコードで渡していた
+- 修正: `useCalendar()` から `calendarEvents` を取得して渡す
+
+#### 検証結果
+
+| テスト | 結果 |
+|---|---|
+| 単一案件差配 (パワまる現調A) | OK — 4名カレンダー除外、5チーム推奨、カレンダースコア表示 |
+| 3件マルチデイ差配 (現調A+工事A+工事B) | OK — 3日間スケジュール生成、各日チーム編成+人工+車両正常 |
+| コンソールエラー | なし |
+
+#### 変更ファイル
+- `src/services/dispatchEngine.js`: 4箇所修正
+- `src/hooks/useDispatchEngine.js`: CalendarContext連携 + dependency array修正
 
 ## Known Issues & TODOs
 
@@ -832,8 +921,9 @@ When making changes to `23_om-dispatch/` in the Claude_Code monorepo, also push 
 5. Travel time estimation uses placeholder values in most cases
 6. Claude_Code monorepoとOM_dispatch専用リポの同期が手動
 7. Azure AD App Registration required for MS365 live API features (see Azure AD Requirements section)
-8. ~~複数日分散差配の機能テスト未完~~ — **Session 12で全テスト完了**（2件同日差配、3件マルチデイ差配、案件編集、メンバー人工テーブル全て動作確認済み）
-9. `calendarEvents`が常に`[]`で渡されている — カレンダー連携との統合が未完
+8. ~~複数日分散差配の機能テスト未完~~ — **Session 12で全テスト完了**
+9. ~~`calendarEvents`が常に`[]`で渡されている~~ — **Session 15でカレンダー連携ディスパッチ実装済み**
+10. ~~**マルチデイ差配がカレンダー競合を無視**~~ — **Session 16で修正完了**: filterAvailableMembers データ構造修正、evaluateDayAssignment でrankMultiJobPlans呼び出し+preferredDate上書き、useDispatchEngine CalendarContext連携
 
 ## Important Rules for Claude
 
