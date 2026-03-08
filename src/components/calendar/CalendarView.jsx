@@ -542,12 +542,13 @@ export default function CalendarView() {
                               <div
                                 key={event.id}
                                 onClick={() => setSelectedEvent(event)}
-                                className="text-[9px] truncate rounded-sm px-1 py-0.5 cursor-pointer mb-0.5"
+                                className="text-[9px] truncate rounded-sm px-1 py-0.5 cursor-pointer mb-0.5 overflow-hidden"
                                 style={{
                                   backgroundColor: member.color + '55',
                                   borderLeft: `3px solid ${member.color}`,
                                   color: '#e5e7eb',
                                   lineHeight: '1.2',
+                                  maxWidth: '100%',
                                 }}
                                 title={event.title}
                               >
