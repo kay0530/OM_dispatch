@@ -21,7 +21,7 @@ export function createMsalInstance(clientId, tenantId, redirectUri) {
     auth: {
       clientId,
       authority: `https://login.microsoftonline.com/${tenantId}`,
-      redirectUri: redirectUri || window.location.origin + import.meta.env.BASE_URL,
+      redirectUri: redirectUri || window.location.origin + window.location.pathname,
     },
     cache: {
       cacheLocation: 'localStorage',

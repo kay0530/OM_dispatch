@@ -598,7 +598,7 @@ export default function CalendarView() {
                     return (
                       <div
                         key={dateStr}
-                        className={`flex-1 min-w-0 relative ${
+                        className={`flex-1 relative ${
                           dIdx < displayDates.length - 1 ? 'border-r border-gray-700/50' : ''
                         } ${today ? 'bg-blue-900/10' : ''} ${isWeekend ? 'bg-gray-800/30' : ''}`}
                       >
