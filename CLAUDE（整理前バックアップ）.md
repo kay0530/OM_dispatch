@@ -25,7 +25,7 @@ Solar power plant O&M (Operations & Maintenance) team dispatch application. Help
 
 ```bash
 cd 23_om-dispatch
-npm run dev     # Vite on port 5189 (configured in vite.config.js)
+npm run dev     # Vite on port 5180 (configured in vite.config.js)
 npm run build   # Production build to dist/
 npm run preview # Preview production build
 npm run lint    # ESLint
@@ -36,7 +36,7 @@ npm run lint    # ESLint
 ```
 23_om-dispatch/
 ├── package.json
-├── vite.config.js              # Vite config (port 5189, React + Tailwind plugins)
+├── vite.config.js              # Vite config (port 5180, React + Tailwind plugins)
 ├── index.html
 ├── CLAUDE.md                   # This file
 ├── src/
@@ -305,7 +305,7 @@ CalendarView.jsx / useCalendarSync.js
 
 **CRITICAL RULE: Always bump DATA_VERSION in CalendarContext.jsx after modifying any temp_*.json file.**
 
-- Current DATA_VERSION: **9**
+- Current DATA_VERSION: **7**
 - Located in: `src/context/CalendarContext.jsx` line 9
 - localStorage key: `om-dispatch-calendar-events`
 - On load: stored version !== DATA_VERSION -> clear cache, reload from REAL_CALENDAR_EVENTS
@@ -345,19 +345,6 @@ All-day events use **date-only** format: `"start": "2026-03-05"`, `"end": "2026-
 - Period: 2026-01-26 to 2026-03-31 (approx 2 months)
 - Total events: ~841 across all 8 members
 - Data was fetched in 3 date-range batches per member pair to avoid MS365 API limits
-
-### Member Email & Calendar ID Mapping (for MS365 MCP)
-
-| Member ID | Name | Email | MS365 Calendar ID |
-|---|---|---|---|
-| hiroki_n | 廣木 憲文 | norifumi.hiroki@altenergy.co.jp | `AAMkAGY2ZTUzOTM0LTM4ZTYtNGI0Mi1iYmZiLWQ0MWEwYWI3NWQwMwBGAAAAAADcHVyUPzc8TJew_9HezF4OBwC1170GZDtHTZK0Uxnz1tqTAAAAAAEGAABQGDtwpfuBSqn0gqKES5DEAAiEcCvnAAA=` |
-| yodogawa_t | 淀川 大地 | taichi.yodogawa@altenergy.co.jp | `AAMkAGY2ZTUzOTM0LTM4ZTYtNGI0Mi1iYmZiLWQ0MWEwYWI3NWQwMwBGAAAAAADcHVyUPzc8TJew_9HezF4OBwC1170GZDtHTZK0Uxnz1tqTAAAAAAEGAABQGDtwpfuBSqn0gqKES5DEAABlkQyaAAA=` |
-| tano_h | 田野 勇人 | hayato.tano@altenergy.co.jp | `AAMkAGY2ZTUzOTM0LTM4ZTYtNGI0Mi1iYmZiLWQ0MWEwYWI3NWQwMwBGAAAAAADcHVyUPzc8TJew_9HezF4OBwC1170GZDtHTZK0Uxnz1tqTAAAAAAEGAABQGDtwpfuBSqn0gqKES5DEAAiEcCvoAAA=` |
-| ota_t | 太田 賢宏 | takahiro.ota@altenergy.co.jp | `AAMkAGY2ZTUzOTM0LTM4ZTYtNGI0Mi1iYmZiLWQ0MWEwYWI3NWQwMwBGAAAAAADcHVyUPzc8TJew_9HezF4OBwC1170GZDtHTZK0Uxnz1tqTAAAAAAEGAABQGDtwpfuBSqn0gqKES5DEAAiEcCviAAA=` |
-| bold_j | BOLD JIGJIDSUREN | jigjidsuren.bold@altenergy.co.jp | `AAMkAGY2ZTUzOTM0LTM4ZTYtNGI0Mi1iYmZiLWQ0MWEwYWI3NWQwMwBGAAAAAADcHVyUPzc8TJew_9HezF4OBwC1170GZDtHTZK0Uxnz1tqTAAAAAAEGAABQGDtwpfuBSqn0gqKES5DEAAiEcCvmAAA=` |
-| sasanuma_k | 笹沼 和宏 | kazuhiro.sasanuma@altenergy.co.jp | `AAMkAGY2ZTUzOTM0LTM4ZTYtNGI0Mi1iYmZiLWQ0MWEwYWI3NWQwMwBGAAAAAADcHVyUPzc8TJew_9HezF4OBwC1170GZDtHTZK0Uxnz1tqTAAAAAAEGAABQGDtwpfuBSqn0gqKES5DEAAiEcCvjAAA=` |
-| yamazaki_k | 山﨑 魁人 | kaito.yamazaki@altenergy.co.jp | `AAMkAGY2ZTUzOTM0LTM4ZTYtNGI0Mi1iYmZiLWQ0MWEwYWI3NWQwMwBGAAAAAADcHVyUPzc8TJew_9HezF4OBwC1170GZDtHTZK0Uxnz1tqTAAAAAAEGAABQGDtwpfuBSqn0gqKES5DEAAiEcCvlAAA=` |
-| wano_t | 和埜 達斗 | tatsuto.wano@altenergy.co.jp | `AAMkAGY2ZTUzOTM0LTM4ZTYtNGI0Mi1iYmZiLWQ0MWEwYWI3NWQwMwBGAAAAAADcHVyUPzc8TJew_9HezF4OBwC1170GZDtHTZK0Uxnz1tqTAAAAAAEGAABQGDtwpfuBSqn0gqKES5DEAAiEcCvkAAA=` |
 
 ### Re-Fetching Calendar Data
 When re-fetching via MS365 MCP:
@@ -513,7 +500,7 @@ Provides: events, loading, lastSynced, syncError, setEvents, addEvents, clearEve
 - Added all-day event support (banner + EventBlock null guard)
 - Migrated from hardcoded JS events to JSON import architecture
 - Fixed pagination (廣木), batch fetching (BOLD/笹沼), date format (isAllDay)
-- Current DATA_VERSION: 8
+- Current DATA_VERSION: 7
 
 ### Session 5: Firebase & GitHub Pages Deployment
 - Added Firebase/Firestore integration for multi-device real-time sync
@@ -552,7 +539,6 @@ Provides: events, loading, lastSynced, syncError, setEvents, addEvents, clearEve
 ### Repositories
 - **Claude_Code (monorepo)**: https://github.com/kay0530/Claude_Code — contains `23_om-dispatch/` as subdirectory
 - **OM_dispatch (専用)**: https://github.com/kay0530/OM_dispatch — standalone repo for GitHub Pages
-  - **ローカルパス**: `Claude_Code_Demo/OM_dispatch/` (Session 18でDesktopから移動)
 
 ### GitHub Pages
 - **URL**: https://kay0530.github.io/OM_dispatch/
@@ -562,16 +548,7 @@ Provides: events, loading, lastSynced, syncError, setEvents, addEvents, clearEve
 - **Note**: Environment protection rules removed from `github-pages` environment to allow Actions deploy
 
 ### Keeping Repos in Sync
-
-**同期手順** (monorepo → OM_dispatch):
-1. OM_dispatchリポに`claude_code`リモートを追加済み: `git remote add claude_code https://github.com/kay0530/Claude_Code.git`
-2. `git fetch claude_code main` でmonorepoの最新を取得
-3. `git show claude_code/main:23_om-dispatch/<file> > <dest>` で個別ファイルを抽出
-4. **⚠️ CRITICAL: `vite.config.js`のbase pathを必ず変更**:
-   - monorepo: `base: '/Claude_Code/'`
-   - OM_dispatch: `base: '/OM_dispatch/'`
-   - base pathを変更せずにデプロイすると**GitHub Pagesが白画面**になる
-5. コミット & push → GitHub Actionsが自動デプロイ
+When making changes to `23_om-dispatch/` in the Claude_Code monorepo, also push to OM_dispatch repo for deployment.
 
 ### Session 8: Calendar UI — Outlook-style Layout & Full-width
 - Switched MSAL auth from popup to redirect flow (`msalService.js`, `AuthContext.jsx`, `Header.jsx`)
@@ -657,7 +634,7 @@ Provides: events, loading, lastSynced, syncError, setEvents, addEvents, clearEve
    - `src/services/claudeService.js`: AI差配プロンプトを人工ベースに更新
    - `src/data/skillCategories.js`: バックアップ退避、差配ロジックから除外
    - UI: MemberCard, SkillRadarChart, DispatchView, JobCreateForm等の更新
-3. **検証**: dev server (port 5189) で差配テスト
+3. **検証**: dev server (port 5180) で差配テスト
 
 #### 新ディスパッチアルゴリズム（概要）
 ```
@@ -935,129 +912,59 @@ const dayJobsWithTypes = items.map(item => ({
 - `src/services/dispatchEngine.js`: 4箇所修正
 - `src/hooks/useDispatchEngine.js`: CalendarContext連携 + dependency array修正
 
-### Session 18: カレンダー連携複数案件差配の完成 (excludedMembers + calendarFit修正)
+### Session 17: データマイグレーション + 案件編集機能復活
 
-**ワークツリー**: `agitated-austin` (branch: `claude/agitated-austin`)
+**ワークツリー**: `charming-yalow` (branch: `claude/charming-yalow`)
 
-#### 修正内容
+#### 発見した問題
 
-**1. filterAvailableMembers() → 除外メンバー情報を返す (dispatchEngine.js)**
-- 戻り値を `Array<member>` → `{ available: Array<member>, excluded: Array<{ member, conflictEvents }> }` に変更
-- 除外されたメンバーとその競合イベントを追跡
+**Bug #1: 差配実行で結果0件**
+- **根本原因**: デプロイ済みサイトの localStorage に旧スキーマ（8軸 `skills`/`avgSkill`）データが残存
+- `manpowerByJobType` が undefined → `getMemberManpower()` が全員 0 → `qualifiedCount === 0` → 全チーム不適格 → 結果0件
+- jobTypes も旧10種（リパワリング・草刈り含む）、conditions も旧形式
 
-**2. scoreTeam() → calendarFitスコア修正 (dispatchEngine.js)**
-- CLAUDE.md仕様に合わせ `teamSize: 15%` → `calendarFit: 15%` に変更
-- チームメンバーのカレンダー空き状況を0-10点でスコアリング
-- スコアウェイト: Manpower 40%, Qualified 20%, CalendarFit 15%, Vehicle 15%, Stretch 10%
+**Bug #2: 案件編集機能の欠落**
+- `JobEditForm.jsx` がプロジェクトに存在しない（worktree マージ時に欠落）
+- `App.jsx` に `'job-edit'`/`'job-detail'` ルートなし → PlaceholderView 表示
+- `JobListView.jsx` が `'job-detail'` にナビゲート → default ケース → ダッシュボードに遷移
 
-**3. rankTeams() → _meta.excludedMembers 追加 (dispatchEngine.js)**
-- 返却配列に `_meta = { excludedMembers: [...] }` を付与
-- UI側で除外メンバーバナーが正しく表示されるようになった
+#### 実装した修正（ビルド成功、ブラウザテスト未完了）
 
-**4. rankMultiJobPlans() → 除外メンバー集計 (dispatchEngine.js)**
-- `allExcludedIds` Set で除外メンバーIDを追跡
-- `_meta.excludedMembers` を返却
+**Fix #1: AppContext データマイグレーション (`src/context/AppContext.jsx`)**
+- `migrateMembers()`: localStorage のメンバーに `manpowerByJobType` がなければ DEFAULT_MEMBERS からマージ
+- `migrateJobTypes()`: `baseManpower` がなければ DEFAULT_JOB_TYPES に置換
+- `migrateConditions()`: `adjustmentType` がなく `timeMultiplier` があれば DEFAULT_CONDITIONS に置換
+- `initialState` で `loadFromStorage()` の結果を各 migrate 関数で処理
 
-**5. rankMultiDayPlans() → 除外メンバー伝播 (dispatchEngine.js)**
-- single-day/multi-day 両パスで `_meta` を伝播
+**Fix #2: JobEditForm 新規作成 (`src/components/jobs/JobEditForm.jsx`)**
+- JobCreateForm と同一レイアウトの4ステップウィザード（種別→条件→詳細→確認）
+- 既存案件データで `useEffect` によりフォーム初期値をプリポピュレート
+- `UPDATE_JOB` dispatch で保存、`jobId` 不正時のエラーハンドリング付き
 
-**6. useDispatchEngine.js → 複数案件でexcludedMembers取得**
-- `runMultiJobDispatch()` 内で `plans._meta.excludedMembers` を取得・セット
+**Fix #3: ルーティング修正**
+- `App.jsx`: `JobEditForm` import + `case 'job-edit'` 追加 + `viewParams` を読み取れるように修正（`const [, setViewParams]` → `const [viewParams, setViewParams]`）
+- `JobListView.jsx`: `onNavigate('job-detail')` → `onNavigate('job-edit')` に変更
 
-**7. DispatchView.jsx → 除外メンバーバナー改善**
-- テキスト: 「カレンダーにより除外されたメンバー」→「Outlookカレンダーの予定により差配対象外」
-- サブタイトル説明文追加
-- レイアウト修正: `flex items-center` → `flex items-start` + `<div>` ラッパー
-
-**8. vite.config.js → ポート5189に変更**
-
-#### 変更ファイル
-- `src/services/dispatchEngine.js`: 5箇所修正 (filterAvailableMembers, scoreTeam, rankTeams, rankMultiJobPlans, rankMultiDayPlans)
-- `src/hooks/useDispatchEngine.js`: excludedMembers取得追加
-- `src/components/dispatch/DispatchView.jsx`: バナーUI改善
-- `vite.config.js`: ポート5180→5189
+#### 変更ファイル (4件)
+- `src/context/AppContext.jsx` — migrateMembers/migrateJobTypes/migrateConditions 追加
+- `src/components/jobs/JobEditForm.jsx` — 新規作成（人工ベース案件編集フォーム）
+- `src/App.jsx` — JobEditForm import + 'job-edit' ルート + viewParams 読み取り
+- `src/components/jobs/JobListView.jsx` — 'job-detail' → 'job-edit' ナビゲーション
 
 #### ビルド結果
-- `npm run build`: 成功（255 modules, 9.60s）
+- `npm run build` 成功（255 modules）
+- ブラウザ検証: **未完了**（dev server 起動まで到達）
 
-### Session 19: カレンダーデータ更新 + リアルタイム同期設計
-
-**ワークツリー**: `sweet-wing` (branch: `claude/sweet-wing`)
-
-#### 完了した変更
-
-**1. OM_dispatchリポへのコード同期 + デプロイ**
-- monorepoのmainブランチからOM_dispatchリポに全ファイル同期
-- CalendarView.jsx: `syncWeek` → `loadRealCalendarData` に変更済み
-- CalendarContext.jsx: DATA_VERSION=11, `mergeEvents`追加済み
-- useCalendarSync.js: `syncFromOutlook`で`mergeEvents`使用
-- vite.config.js: base path `/OM_dispatch/` に修正
-- GitHub Pages デプロイ成功 (commit: 363008f)
-
-**2. Azure AD管理者承認: 確認済み**
-- 全8メンバーのカレンダー読み取り権限が承認済み
-- MS365 MCPで全メンバーのカレンダー取得に成功
-
-**3. 静的JSON再取得 (不完全)**
-- MS365 MCPの`get-specific-calendar-view`で全メンバー再取得を試みた
-- `top`パラメータ未指定によりデフォルト10件制限 → 各メンバー10件のみ取得
-- 前回データ(数百件)より大幅に少ないため、デプロイ見送り
-- **教訓**: `get-specific-calendar-view`は`top: 100`以上を指定すること
-
-#### 未完了: リアルタイムOutlook同期
-
-**目標**: 静的JSON依存を脱却し、MSAL認証済みなら起動時にGraph APIから自動取得
-
-**実装プラン** (`45_om-dispatch-realtime-sync/plan-realtime-sync.md`):
-
-1. **CalendarView.jsx 自動同期**: `isAuthenticated` → Graph API自動フェッチ / 未認証 → 静的JSONフォールバック
-2. **週切替時の追加取得**: 表示範囲のデータがなければGraph APIから取得
-3. **ボタン統合**: 「データ同期」「Outlook同期」を1つに統合
-4. **GitHub Pagesテスト**: 本番でMSAL認証 → 自動同期動作確認
-
-**アーキテクチャ変更**:
-```
-Before: アプリ起動 → 静的JSON → 表示 (古いデータ)
-After:  アプリ起動 → MSALセッション確認
-          ├─ 認証済み → Graph API自動同期 → 最新データ表示
-          └─ 未認証 → 静的JSONフォールバック
-```
-
-### Session 20: リアルタイムOutlook同期の実装
-
-**ワークツリー**: `inspiring-mcclintock` (branch: `claude/inspiring-mcclintock`)
-
-#### 完了した変更
-
-**1. useCalendarSync.js: autoSync + fetchWeekData 追加**
-- `autoSync(getToken, members)`: 認証済み → Graph API自動フェッチ(-14日～+42日) / 未認証 → 静的JSONフォールバック
-- `fetchWeekData(getToken, members, weekStartDate)`: 週単位のGraph APIフェッチ（mergeEventsで範囲マージ）
-- 既存の`syncInProgressRef`で同時実行防止
-
-**2. CalendarView.jsx: 自動同期 + ボタン統合**
-- マウント時自動同期: `isAuthenticated` → `autoSync()` / 未認証 → `loadRealCalendarData()`
-- 週切替時フェッチ: 表示範囲にイベントがなければGraph APIから追加取得
-- ボタン統合: 「Outlook同期」(認証時) / 「データ読込」(未認証時) の1ボタンに統合
-- 未認証ユーザーへのMS365連携ヒント表示
-
-**3. アーキテクチャ変更**
-```
-Before: アプリ起動 → 静的JSON → 表示 (古いデータ)
-After:  アプリ起動 → MSALセッション確認
-          ├─ 認証済み → Graph API自動同期 → 最新データ表示
-          └─ 未認証 → 静的JSONフォールバック
-```
-
-#### ビルド結果
-- `npm run build`: 成功（256 modules, 2.80s）
-
-#### 未完了
-- GitHub Pagesデプロイ + 本番でMSAL認証 → 自動同期動作確認
-- OM_dispatchリポへの同期（base path変更必要）
+#### 次セッションでやること
+1. **ブラウザ検証**: dev server で差配テスト（旧データマイグレーション確認）+ 案件編集テスト
+2. **コミット**: 変更を `claude/charming-yalow` ブランチにコミット
+3. **メインブランチマージ**: charming-yalow → main
+4. **OM_dispatch 同期 + デプロイ**: Claude_Code monorepo → OM_dispatch → GitHub Pages
+5. **本番検証**: デプロイ後、実際のサイトで localStorage マイグレーションが動作することを確認
 
 ## Known Issues & TODOs
 
-1. ~~Calendar data defaults to static JSON; live Outlook API available when Azure AD configured~~ — **Session 20で実装完了**
+1. Calendar data defaults to static JSON; live Outlook API available when Azure AD configured
 2. `temp_*.json` filenames are temporary; consider renaming to permanent format
 3. 廣木's event count (~110) may be lower than expected vs other members (100-160)
 4. No automated tests
@@ -1066,7 +973,9 @@ After:  アプリ起動 → MSALセッション確認
 7. Azure AD App Registration required for MS365 live API features (see Azure AD Requirements section)
 8. ~~複数日分散差配の機能テスト未完~~ — **Session 12で全テスト完了**
 9. ~~`calendarEvents`が常に`[]`で渡されている~~ — **Session 15でカレンダー連携ディスパッチ実装済み**
-10. ~~**マルチデイ差配がカレンダー競合を無視**~~ — **Session 16で修正完了**: filterAvailableMembers データ構造修正、evaluateDayAssignment でrankMultiJobPlans呼び出し+preferredDate上書き、useDispatchEngine CalendarContext連携
+10. ~~**マルチデイ差配がカレンダー競合を無視**~~ — **Session 16で修正完了**
+11. ~~**差配実行で結果0件（旧スキーマ問題）**~~ — **Session 17でデータマイグレーション実装済み（テスト未完了）**
+12. ~~**案件編集機能の欠落**~~ — **Session 17でJobEditForm復活（テスト未完了）**
 
 ## Important Rules for Claude
 
@@ -1080,5 +989,5 @@ After:  アプリ起動 → MSALセッション確認
 8. **Commit style**: English, conventional commit format (feat:, fix:, refactor:, etc.)
 9. **MS365 Auth**: MSAL uses redirect flow (switched from popup in Session 8)
 10. **人工ベース移行**: Session 10で実装完了。Session 11で複数日分散差配を追加
-11. **複数日分散差配**: `rankMultiDayPlans()`を使用。`preferredDate`起点で営業日に分散。Session 12で全テスト完了
-12. **OM_dispatch同期時のbase path**: monorepo(`/Claude_Code/`)とOM_dispatch(`/OM_dispatch/`)でvite.config.jsのbase pathが異なる。同期時に必ず変更すること
+11. **複数日分散差配**: `rankMultiDayPlans()`を使用。`preferredDate`起点で営業日に分散
+12. **データマイグレーション**: AppContext の migrate関数が旧スキーマを自動変換（Session 17）
